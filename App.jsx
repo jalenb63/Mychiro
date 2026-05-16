@@ -7,8 +7,7 @@ const C = {
   tealGlow: "rgba(20,184,166,0.15)", gold: "#F59E0B", goldGlow: "rgba(245,158,11,0.15)",
   coral: "#F43F5E", coralGlow: "rgba(244,63,94,0.12)", white: "#FFFFFF",
   text: "#E8EEFF", textSub: "#8899BB", textMuted: "#4A5A7A",
-  green: "#10B981", greenGlow: "rgba(16,185,129,0.15)",
-};const PROVIDERS = [
+  green: "#10B981", greenGlow: "rgba(16,185,129,0.15)",const PROVIDERS = [
   { id: 1, name: "Dr. Alicia Monroe, DC", practice: "Align Spine & Wellness", specialties: ["Sciatica", "Disc Herniation", "Lower Back Pain"], distance: "1.2 mi", rating: 4.9, reviews: 312, availability: "Today 3pm", sponsored: true, avatar: "AM", color: C.accent },
   { id: 2, name: "Dr. Marcus Webb, DC CCSP", practice: "Webb Performance & Spine", specialties: ["Sports Injuries", "Posture", "Neck Pain", "Kyphosis"], distance: "2.7 mi", rating: 4.8, reviews: 198, availability: "Tomorrow 9am", sponsored: true, avatar: "MW", color: C.teal },
   { id: 3, name: "Dr. Priya Nair, DC", practice: "Nair Family Chiropractic", specialties: ["Lower Back Pain", "Sciatica", "Pediatric"], distance: "3.1 mi", rating: 4.7, reviews: 143, availability: "Thu 11am", sponsored: false, avatar: "PN", color: C.gold },
@@ -18,8 +17,7 @@ const C = {
 const PAIN_AREAS = ["Neck", "Upper Back", "Mid Back", "Lower Back", "Left Hip", "Right Hip", "Left Leg", "Right Leg", "Left Shoulder", "Right Shoulder", "Head"];
 const QUICK_QS = ["Lower back pain every morning", "Shooting pain down my leg", "Stiff neck and crackling", "Bad posture concerns", "When to see a chiropractor?"];
 const todayStr = () => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-const timeNow = () => new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-const painColor = (n) => n <= 3 ? C.green : n <= 6 ? C.gold : C.coral;const SYSTEM_PROMPT = `You are MyChiro, a knowledgeable AI spinal health guide.
+const timeNow = () => new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });const SYSTEM_PROMPT = `You are MyChiro, a knowledgeable AI spinal health guide.
 1. EDUCATE patients about spinal symptoms in plain, compassionate language.
 2. TRIAGE: conservative care, chiropractic evaluation, or URGENT (red flags: bladder/bowel loss, trauma, progressive neuro loss, saddle anesthesia, fever with back pain).
 3. Warm, concise, 3-4 short paragraphs. End with a clear action step.
@@ -57,7 +55,12 @@ function detectUrgency(t) {
   const l = t.toLowerCase();
   if (l.includes("emergency") || l.includes("911") || l.includes("bladder") || l.includes("bowel") || l.includes("immediately")) return "urgent";
   if (l.includes("chiropractor") || l.includes("appointment") || l.includes("evaluation")) return "chiro";
-  return null;function SpineLogo({ size = 28 }) {
+  return null;
+}
+
+const painColor = (n) => n <= 3 ? C.green : n <= 6 ? C.gold : C.coral;
+
+};function SpineLogo({ size = 28 }) {
   const segs = 5;
   const sw = size * 0.45;
   const sh = size * 0.13;
@@ -144,7 +147,7 @@ function SectionHead({ children }) {
     </div>
   );
 }
-}function SetupScreen({ onDone }) {
+function SetupScreen({ onDone }) {
   const [key, setKey] = useState("");
   const [show, setShow] = useState(false);
   const [err, setErr] = useState("");
@@ -209,9 +212,7 @@ function Welcome({ onEnter }) {
       <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, color: C.textSub, marginBottom: 32 }}>So I can personalize your experience.</div>
       <input value={name} onChange={e => setName(e.target.value)} placeholder="First name" style={{ width: "100%", padding: "16px 18px", borderRadius: 14, border: `1.5px solid ${C.borderLight}`, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 16, color: C.text, background: C.surface, outline: "none", boxSizing: "border-box", marginBottom: 24 }} />
       <GlowBtn full onClick={() => onEnter({ name: name.trim() || "there", role: "patient" })} style={{ padding: "16px 0", fontSize: 16, borderRadius: 16 }}>Continue →</GlowBtn>
-    </div>
-  );
-function Chat({ userName, onNav, setLastTopic }) {
+    </div>function Chat({ userName, onNav, setLastTopic }) {
   const [msgs, setMsgs] = useState([{
     role: "assistant",
     content: `Hi ${userName}! I'm your MyChiro AI guide. Tell me what's going on — back pain, neck stiffness, posture issues, or anything spine-related. I'll help you understand it and figure out your next step. 💙`,
@@ -301,6 +302,10 @@ function Chat({ userName, onNav, setLastTopic }) {
       </div>
     </div>
   );
+}
+
+  );
+}
 function Find({ onBook, lastTopic }) {
   const [booking, setBooking] = useState(null);
   const [search, setSearch] = useState("");
@@ -397,7 +402,8 @@ function Booking({ provider, onBack, onConfirm }) {
       {time && <GlowBtn full onClick={() => setDone(true)} style={{ padding: "15px 0", fontSize: 15, borderRadius: 16 }}>Confirm Appointment</GlowBtn>}
     </div>
   );
-}function Journal() {
+}
+function Journal() {
   const [entries, setEntries] = useState([]);
   const [adding, setAdding] = useState(false);
   const [area, setArea] = useState("");
@@ -520,7 +526,256 @@ function Posture() {
       ))}
     </div>
   );
-}function Profile({ user, onLogout, appointments }) {
+}
+function Journal() {
+  const [entries, setEntries] = useState([]);
+  const [adding, setAdding] = useState(false);
+  const [area, setArea] = useState("");
+  const [pain, setPain] = useState(5);
+  const [notes, setNotes] = useState("");
+
+  const save = () => {
+    if (!area) return;
+    setEntries(e => [{ id: Date.now(), area, pain, notes, date: todayStr(), time: timeNow() }, ...e]);
+    setArea(""); setPain(5); setNotes(""); setAdding(false);
+  };
+
+  return (
+    <div style={{ overflowY: "auto", height: "100%", padding: 16, background: C.bg }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+        <SectionHead>Symptom Journal</SectionHead>
+        <GlowBtn small onClick={() => setAdding(a => !a)}>{adding ? "Cancel" : "+ Log"}</GlowBtn>
+      </div>
+      {adding && (
+        <GlassCard style={{ padding: 20, marginBottom: 18, border: `1px solid ${C.accent}33` }}>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Pain Area</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {PAIN_AREAS.map(a => <button key={a} onClick={() => setArea(a)} style={{ padding: "7px 14px", borderRadius: 20, border: `1px solid ${area===a ? C.accent : C.border}`, background: area===a ? C.accentGlow : C.surface, color: area===a ? C.accent : C.textSub, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 12, fontWeight: 500, cursor: "pointer" }}>{a}</button>)}
+            </div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Pain Level: <span style={{ color: painColor(pain) }}>{pain}/10</span></div>
+            <div style={{ display: "flex", gap: 4 }}>
+              {[1,2,3,4,5,6,7,8,9,10].map(n => <button key={n} onClick={() => setPain(n)} style={{ flex: 1, padding: "9px 0", borderRadius: 8, border: "none", background: pain===n ? painColor(n) : C.surface, color: pain===n ? "#fff" : C.textMuted, fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>{n}</button>)}
+            </div>
+          </div>
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Notes</div>
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="What triggered it? What helps?" rows={3} style={{ width: "100%", padding: "13px 14px", borderRadius: 12, border: `1px solid ${C.border}`, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, color: C.text, background: C.surface, outline: "none", resize: "none", boxSizing: "border-box" }} />
+          </div>
+          <GlowBtn full onClick={save}>Save Entry</GlowBtn>
+        </GlassCard>
+      )}
+      {entries.length === 0 && !adding && (
+        <div style={{ textAlign: "center", padding: "56px 24px" }}>
+          <div style={{ fontSize: 48, marginBottom: 14, opacity: 0.4 }}>📓</div>
+          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 8 }}>No entries yet</div>
+          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, color: C.textMuted }}>Log symptoms to track patterns over time.</div>
+        </div>
+      )}
+      {entries.map(e => (
+        <GlassCard key={e.id} style={{ padding: "16px 18px", marginBottom: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+            <div><div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 15, fontWeight: 700, color: C.text }}>{e.area}</div><div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: C.textMuted, marginTop: 2 }}>{e.date} · {e.time}</div></div>
+            <div style={{ width: 38, height: 38, borderRadius: 11, background: painColor(e.pain) + "22", border: `1px solid ${painColor(e.pain)}44`, display: "flex", alignItems: "center", justifyContent: "center", color: painColor(e.pain), fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: 16 }}>{e.pain}</div>
+          </div>
+          {e.notes && <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: C.textSub, lineHeight: 1.6 }}>{e.notes}</div>}
+        </GlassCard>
+      ))}
+    </div>
+  );
+}
+
+function Posture() {
+  const [checks, setChecks] = useState([]);
+  const [checking, setChecking] = useState(false);
+  const [scores, setScores] = useState({});
+  const items = [
+    { id: "ears", label: "Ears over shoulders", icon: "👂" },
+    { id: "screen", label: "Screen at eye level", icon: "🖥️" },
+    { id: "feet", label: "Feet flat on floor", icon: "🦶" },
+    { id: "lumbar", label: "Lumbar support active", icon: "🪑" },
+    { id: "shoulders", label: "Shoulders relaxed", icon: "🧘" },
+    { id: "chin", label: "No forward head posture", icon: "🙅" },
+  ];
+  const saveCheck = () => {
+    const pct = Math.round((Object.values(scores).filter(Boolean).length / items.length) * 100);
+    setChecks(c => [{ id: Date.now(), date: todayStr(), time: timeNow(), pct }, ...c]);
+    setScores({}); setChecking(false);
+  };
+  const sc = (p) => p >= 80 ? C.green : p >= 60 ? C.gold : C.coral;
+  const avg = checks.length ? Math.round(checks.reduce((s,c) => s+c.pct, 0) / checks.length) : 0;
+
+  return (
+    <div style={{ overflowY: "auto", height: "100%", padding: 16, background: C.bg }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+        <SectionHead>Posture Tracker</SectionHead>
+        <GlowBtn small onClick={() => setChecking(c => !c)}>{checking ? "Cancel" : "Check Now"}</GlowBtn>
+      </div>
+      {checking && (
+        <GlassCard style={{ padding: 20, marginBottom: 18, border: `1px solid ${C.accent}33` }}>
+          {items.map(item => (
+            <div key={item.id} onClick={() => setScores(s => ({ ...s, [item.id]: !s[item.id] }))} style={{ display: "flex", gap: 12, alignItems: "center", padding: "12px 14px", borderRadius: 12, border: `1px solid ${scores[item.id] ? C.accent + "55" : C.border}`, background: scores[item.id] ? C.accentGlow : C.surface, marginBottom: 8, cursor: "pointer", transition: "all 0.18s" }}>
+              <div style={{ width: 22, height: 22, borderRadius: 7, border: `2px solid ${scores[item.id] ? C.accent : C.border}`, background: scores[item.id] ? C.accent : "transparent", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, flexShrink: 0 }}>{scores[item.id] ? "✓" : ""}</div>
+              <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, fontWeight: 600, color: scores[item.id] ? C.text : C.textSub }}>{item.icon} {item.label}</span>
+            </div>
+          ))}
+          <div style={{ textAlign: "center", fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 14, color: C.accent, margin: "10px 0 16px" }}>Score: {Object.values(scores).filter(Boolean).length}/{items.length}</div>
+          <GlowBtn full onClick={saveCheck}>Save Check-In</GlowBtn>
+        </GlassCard>
+      )}
+      {checks.length === 0 && !checking && (
+        <div style={{ textAlign: "center", padding: "56px 24px" }}>
+          <div style={{ fontSize: 48, marginBottom: 14, opacity: 0.4 }}>🧍</div>
+          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 8 }}>No checks yet</div>
+          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, color: C.textMuted }}>Run a check-in to start tracking your posture.</div>
+        </div>
+      )}
+      {checks.length > 0 && (
+        <GlassCard style={{ padding: "18px 20px", marginBottom: 14, background: sc(avg) + "12", border: `1px solid ${sc(avg)}33` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ width: 60, height: 60, borderRadius: 18, background: sc(avg) + "22", border: `2px solid ${sc(avg)}55`, display: "flex", alignItems: "center", justifyContent: "center", color: sc(avg), fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 20, fontWeight: 800 }}>{avg}%</div>
+            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: C.textSub, lineHeight: 1.7 }}>{avg >= 80 ? "Excellent posture habits." : avg >= 60 ? "Room to improve." : "Posture may be contributing to your pain."}</div>
+          </div>
+        </GlassCard>
+      )}
+      {checks.map(c => (
+        <GlassCard key={c.id} style={{ padding: "14px 18px", marginBottom: 10 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div><div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, fontWeight: 600, color: C.text }}>{c.date}</div><div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: C.textMuted }}>{c.time}</div></div>
+            <div style={{ width: 46, height: 46, borderRadius: 14, background: sc(c.pct) + "22", border: `1px solid ${sc(c.pct)}44`, display: "flex", alignItems: "center", justifyContent: "center", color: sc(c.pct), fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: 15 }}>{c.pct}%</div>
+          </div>
+        </GlassCard>
+      ))}
+    </div>
+  );
+}
+function Journal() {
+  const [entries, setEntries] = useState([]);
+  const [adding, setAdding] = useState(false);
+  const [area, setArea] = useState("");
+  const [pain, setPain] = useState(5);
+  const [notes, setNotes] = useState("");
+
+  const save = () => {
+    if (!area) return;
+    setEntries(e => [{ id: Date.now(), area, pain, notes, date: todayStr(), time: timeNow() }, ...e]);
+    setArea(""); setPain(5); setNotes(""); setAdding(false);
+  };
+
+  return (
+    <div style={{ overflowY: "auto", height: "100%", padding: 16, background: C.bg }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+        <SectionHead>Symptom Journal</SectionHead>
+        <GlowBtn small onClick={() => setAdding(a => !a)}>{adding ? "Cancel" : "+ Log"}</GlowBtn>
+      </div>
+      {adding && (
+        <GlassCard style={{ padding: 20, marginBottom: 18, border: `1px solid ${C.accent}33` }}>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Pain Area</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {PAIN_AREAS.map(a => <button key={a} onClick={() => setArea(a)} style={{ padding: "7px 14px", borderRadius: 20, border: `1px solid ${area===a ? C.accent : C.border}`, background: area===a ? C.accentGlow : C.surface, color: area===a ? C.accent : C.textSub, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 12, fontWeight: 500, cursor: "pointer" }}>{a}</button>)}
+            </div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Pain Level: <span style={{ color: painColor(pain) }}>{pain}/10</span></div>
+            <div style={{ display: "flex", gap: 4 }}>
+              {[1,2,3,4,5,6,7,8,9,10].map(n => <button key={n} onClick={() => setPain(n)} style={{ flex: 1, padding: "9px 0", borderRadius: 8, border: "none", background: pain===n ? painColor(n) : C.surface, color: pain===n ? "#fff" : C.textMuted, fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>{n}</button>)}
+            </div>
+          </div>
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Notes</div>
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="What triggered it? What helps?" rows={3} style={{ width: "100%", padding: "13px 14px", borderRadius: 12, border: `1px solid ${C.border}`, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, color: C.text, background: C.surface, outline: "none", resize: "none", boxSizing: "border-box" }} />
+          </div>
+          <GlowBtn full onClick={save}>Save Entry</GlowBtn>
+        </GlassCard>
+      )}
+      {entries.length === 0 && !adding && (
+        <div style={{ textAlign: "center", padding: "56px 24px" }}>
+          <div style={{ fontSize: 48, marginBottom: 14, opacity: 0.4 }}>📓</div>
+          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 8 }}>No entries yet</div>
+          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, color: C.textMuted }}>Log symptoms to track patterns over time.</div>
+        </div>
+      )}
+      {entries.map(e => (
+        <GlassCard key={e.id} style={{ padding: "16px 18px", marginBottom: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+            <div><div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 15, fontWeight: 700, color: C.text }}>{e.area}</div><div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: C.textMuted, marginTop: 2 }}>{e.date} · {e.time}</div></div>
+            <div style={{ width: 38, height: 38, borderRadius: 11, background: painColor(e.pain) + "22", border: `1px solid ${painColor(e.pain)}44`, display: "flex", alignItems: "center", justifyContent: "center", color: painColor(e.pain), fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: 16 }}>{e.pain}</div>
+          </div>
+          {e.notes && <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: C.textSub, lineHeight: 1.6 }}>{e.notes}</div>}
+        </GlassCard>
+      ))}
+    </div>
+  );
+}
+
+function Posture() {
+  const [checks, setChecks] = useState([]);
+  const [checking, setChecking] = useState(false);
+  const [scores, setScores] = useState({});
+  const items = [
+    { id: "ears", label: "Ears over shoulders", icon: "👂" },
+    { id: "screen", label: "Screen at eye level", icon: "🖥️" },
+    { id: "feet", label: "Feet flat on floor", icon: "🦶" },
+    { id: "lumbar", label: "Lumbar support active", icon: "🪑" },
+    { id: "shoulders", label: "Shoulders relaxed", icon: "🧘" },
+    { id: "chin", label: "No forward head posture", icon: "🙅" },
+  ];
+  const saveCheck = () => {
+    const pct = Math.round((Object.values(scores).filter(Boolean).length / items.length) * 100);
+    setChecks(c => [{ id: Date.now(), date: todayStr(), time: timeNow(), pct }, ...c]);
+    setScores({}); setChecking(false);
+  };
+  const sc = (p) => p >= 80 ? C.green : p >= 60 ? C.gold : C.coral;
+  const avg = checks.length ? Math.round(checks.reduce((s,c) => s+c.pct, 0) / checks.length) : 0;
+
+  return (
+    <div style={{ overflowY: "auto", height: "100%", padding: 16, background: C.bg }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+        <SectionHead>Posture Tracker</SectionHead>
+        <GlowBtn small onClick={() => setChecking(c => !c)}>{checking ? "Cancel" : "Check Now"}</GlowBtn>
+      </div>
+      {checking && (
+        <GlassCard style={{ padding: 20, marginBottom: 18, border: `1px solid ${C.accent}33` }}>
+          {items.map(item => (
+            <div key={item.id} onClick={() => setScores(s => ({ ...s, [item.id]: !s[item.id] }))} style={{ display: "flex", gap: 12, alignItems: "center", padding: "12px 14px", borderRadius: 12, border: `1px solid ${scores[item.id] ? C.accent + "55" : C.border}`, background: scores[item.id] ? C.accentGlow : C.surface, marginBottom: 8, cursor: "pointer", transition: "all 0.18s" }}>
+              <div style={{ width: 22, height: 22, borderRadius: 7, border: `2px solid ${scores[item.id] ? C.accent : C.border}`, background: scores[item.id] ? C.accent : "transparent", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, flexShrink: 0 }}>{scores[item.id] ? "✓" : ""}</div>
+              <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, fontWeight: 600, color: scores[item.id] ? C.text : C.textSub }}>{item.icon} {item.label}</span>
+            </div>
+          ))}
+          <div style={{ textAlign: "center", fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 14, color: C.accent, margin: "10px 0 16px" }}>Score: {Object.values(scores).filter(Boolean).length}/{items.length}</div>
+          <GlowBtn full onClick={saveCheck}>Save Check-In</GlowBtn>
+        </GlassCard>
+      )}
+      {checks.length === 0 && !checking && (
+        <div style={{ textAlign: "center", padding: "56px 24px" }}>
+          <div style={{ fontSize: 48, marginBottom: 14, opacity: 0.4 }}>🧍</div>
+          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 8 }}>No checks yet</div>
+          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, color: C.textMuted }}>Run a check-in to start tracking your posture.</div>
+        </div>
+      )}
+      {checks.length > 0 && (
+        <GlassCard style={{ padding: "18px 20px", marginBottom: 14, background: sc(avg) + "12", border: `1px solid ${sc(avg)}33` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ width: 60, height: 60, borderRadius: 18, background: sc(avg) + "22", border: `2px solid ${sc(avg)}55`, display: "flex", alignItems: "center", justifyContent: "center", color: sc(avg), fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 20, fontWeight: 800 }}>{avg}%</div>
+            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: C.textSub, lineHeight: 1.7 }}>{avg >= 80 ? "Excellent posture habits." : avg >= 60 ? "Room to improve." : "Posture may be contributing to your pain."}</div>
+          </div>
+        </GlassCard>
+      )}
+      {checks.map(c => (
+        <GlassCard key={c.id} style={{ padding: "14px 18px", marginBottom: 10 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div><div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, fontWeight: 600, color: C.text }}>{c.date}</div><div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: C.textMuted }}>{c.time}</div></div>
+            <div style={{ width: 46, height: 46, borderRadius: 14, background: sc(c.pct) + "22", border: `1px solid ${sc(c.pct)}44`, display: "flex", alignItems: "center", justifyContent: "center", color: sc(c.pct), fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: 15 }}>{c.pct}%</div>
+          </div>
+        </GlassCard>
+      ))}
+    </div>
+  );
+}
+function Profile({ user, onLogout, appointments }) {
   return (
     <div style={{ overflowY: "auto", height: "100%", padding: 16, background: C.bg }}>
       <SectionHead>Profile</SectionHead>
@@ -639,3 +894,4 @@ export default function App() {
     </>
   );
 }
+
